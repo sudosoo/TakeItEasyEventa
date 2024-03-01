@@ -1,2 +1,2 @@
-# TakeItEasyEventa
-🐵 TakeItEasyEventa
+# TakeItEasyEvent
+🐵 TakeItEasyEvent
