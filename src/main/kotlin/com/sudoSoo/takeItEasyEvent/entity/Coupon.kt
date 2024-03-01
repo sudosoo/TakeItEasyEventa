@@ -12,8 +12,9 @@ class Coupon(
     val id: Long? = null,
     val couponName: String,
     val couponDeadline: LocalDateTime,
-    var memberId : Long? = null ,
-    @OneToMany(mappedBy = "event")
+    var memberId : Long? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
     var event : Event ?= null,
     var discountPrice: Long = 0,
     var discountRate: Int = 0,
@@ -52,7 +53,7 @@ class Coupon(
 
     }
 
-    fun IssueToMember(memberId: Long?){
+    fun issueToMember(memberId: Long?){
         this.memberId = memberId
     }
 }

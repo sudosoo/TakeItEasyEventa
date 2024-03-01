@@ -6,4 +6,5 @@ import com.sudoSoo.takeItEasyEvent.dto.CreateEventRequestDto
 interface EventService {
     fun createEvent(requestDto: CreateEventRequestDto)
     fun couponIssuance(requestDto: CouponIssuanceRequestDto)
+    fun redisToLocalQueueSchedule(requestDto: CouponIssuanceRequestDto)
 }

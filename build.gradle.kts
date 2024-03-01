@@ -31,9 +31,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.data:spring-data-envers")
 	implementation ("io.github.microutils:kotlin-logging:3.0.5")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
 	//redis
 	implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation ("org.redisson:redisson-spring-boot-starter:3.16.8")
 
 	//h2
 	runtimeOnly("com.h2database:h2")

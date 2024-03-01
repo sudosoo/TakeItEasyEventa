@@ -23,7 +23,7 @@ class CouponServiceImpl (val couponRepository: CouponRepository) : CouponService
 
     override fun issueToMember(requestDto: CouponIssuanceRequestDto) {
         val coupon : Coupon = couponRepository.findById(requestDto.couponId).orElseThrow { IllegalArgumentException("존재 하지 않는 쿠폰 입니다.") }
-        coupon.IssueToMember(requestDto.memberId)
+        coupon.issueToMember(requestDto.memberId)
         couponRepository.save(coupon)
     }
 }

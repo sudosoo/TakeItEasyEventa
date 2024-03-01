@@ -7,11 +7,10 @@ import java.time.format.DateTimeFormatter
 
 @Entity
 class Event(
-    val eventName: String,
+    var eventName: String,
     var eventDeadline: LocalDateTime,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
-    var coupon :MutableList<Coupon> = mutableListOf(),
+    @OneToMany(mappedBy = "event")
+    var coupon : MutableList<Coupon> = mutableListOf(),
     var couponQuantity : Int
 ) {
     @Id
