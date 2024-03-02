@@ -39,7 +39,6 @@ class EventServiceImpl (val eventRepository:EventRepository,val couponService: C
     override fun couponIssuance(requestDto: CouponIssuanceRequestDto) {
         var event = eventRepository.findById(requestDto.eventId).orElseThrow {throw IllegalArgumentException("해당 이벤트는 존재하지 않습니다")}
         couponService.issueToMember(requestDto)
-        event.decreaseCouponQuantity()
         eventRepository.save(event)
     }
 
@@ -47,12 +46,8 @@ class EventServiceImpl (val eventRepository:EventRepository,val couponService: C
     //실행시키면 5분 후 1초에 한번씩 실행이 됌
     @Scheduled(fixedRate = 1000, initialDelay = 1_000 * 60 * 5)
     override fun redisToLocalQueueSchedule(requestDto: CouponIssuanceRequestDto) {
-
-        //큐에서 빼온 친구들 쿠폰이랑 연결시키고 쿠폰갯수 끝나면 대기큐에 있는사람들에게 꽝 넣어주기
-        var event = eventRepository.findById(requestDto.eventId).orElseThrow {throw IllegalArgumentException("해당 이벤트는 존재하지 않습니다")}
-        couponService.issueToMember(requestDto)
-        event.decreaseCouponQuantity()
-        eventRepository.save(event)
+        //큐에서 빼온 member 쿠폰이랑 연결시키고 쿠폰갯수 끝나면 대기큐에 있는사람들에게 꽝 넣어주기
+        couponIssuance(requestDto)
     }
 
 }

@@ -18,7 +18,8 @@ class Coupon(
     var event : Event ?= null,
     var discountPrice: Long = 0,
     var discountRate: Int = 0,
-    var useCheck: Boolean = false
+    var useCheck: Boolean = false,
+    var couponQuantity : Int = 0
 ) {
     init {
 
@@ -35,6 +36,7 @@ class Coupon(
             return Coupon(
                 couponName = couponName,
                 couponDeadline = couponDeadline,
+                couponQuantity = requestDto.couponQuantity,
                 discountPrice = requestDto.discountPrice)
         }
 
@@ -48,9 +50,20 @@ class Coupon(
             return Coupon(
                 couponName = couponName,
                 couponDeadline = couponDeadline,
+                couponQuantity = requestDto.couponQuantity,
                 discountRate = requestDto.discountRate)
         }
+    }
 
+    fun decreaseCouponQuantity() {
+        validQuantity()
+        couponQuantity--
+    }
+
+    private fun validQuantity() {
+        if (couponQuantity < 1) {
+            throw IllegalStateException("남은 쿠폰 수량이 없습니다.")
+        }
     }
 
     fun issueToMember(memberId: Long?){
