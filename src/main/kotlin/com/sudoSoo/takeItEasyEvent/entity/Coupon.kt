@@ -1,6 +1,6 @@
 package com.sudoSoo.takeItEasyEvent.entity
 
-import com.sudoSoo.takeItEasyEvent.dto.CreateEventRequestDto
+import com.sudoSoo.takeItEasyEvent.dto.CreateCouponRequestDto
 import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -27,8 +27,8 @@ class Coupon(
     }
 
     companion object {
-        fun priceFactory(requestDto: CreateEventRequestDto): Coupon {
-            val couponName = "${requestDto.eventName}_${requestDto.discountPrice}"
+        fun priceOf(requestDto: CreateCouponRequestDto): Coupon {
+            val couponName = "EVENT_${requestDto.eventName}_${requestDto.discountPrice}"
             val couponDeadline = LocalDateTime.parse(
                 requestDto.couponDeadline,
                 DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
@@ -41,7 +41,7 @@ class Coupon(
         }
 
 
-        fun rateFactory(requestDto: CreateEventRequestDto): Coupon {
+        fun rateOf(requestDto: CreateCouponRequestDto): Coupon {
             val couponName = "${requestDto.eventName}_${requestDto.discountRate}"
             val couponDeadline = LocalDateTime.parse(
                 requestDto.couponDeadline,

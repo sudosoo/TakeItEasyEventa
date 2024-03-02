@@ -33,6 +33,7 @@ dependencies {
 	implementation ("io.github.microutils:kotlin-logging:3.0.5")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
+
 	//redis
 	implementation ("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation ("org.redisson:redisson-spring-boot-starter:3.16.8")

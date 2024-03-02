@@ -12,42 +12,17 @@ import java.time.LocalDateTime
 
 @Service
 @Transactional
-class EventServiceImpl (val eventRepository:EventRepository,val couponService: CouponService) :EventService {
+class EventServiceImpl (val eventRepository:EventRepository) :EventService {
     override fun createEvent(requestDto: CreateEventRequestDto) {
-        validateDiscountFields(requestDto)
-        val coupon: Coupon = if (requestDto.discountRate != 0) {
-            // 할인율 적용 쿠폰일 때
-            couponService.rateCouponCreate(requestDto)
-        } else {
-            // 할인가격 적용 쿠폰일 때
-            couponService.priceCouponCreate(requestDto)
-        }
-
         val event = Event.of(requestDto)
-        event.addCoupon(coupon)
-        eventRepository.save(event)
-
-    }
-
-    private fun validateDiscountFields(requestDto: CreateEventRequestDto) {
-        if ((requestDto.discountRate == 0 && requestDto.discountPrice == 0L) ||
-            (requestDto.discountRate != 0 && requestDto.discountPrice != 0L)) {
-            throw IllegalArgumentException("discountRate 또는 discountPrice 중 하나만 존재 해야 합니다.")
-        }
-    }
-
-    override fun couponIssuance(requestDto: CouponIssuanceRequestDto) {
-        var event = eventRepository.findById(requestDto.eventId).orElseThrow {throw IllegalArgumentException("해당 이벤트는 존재하지 않습니다")}
-        couponService.issueToMember(requestDto)
         eventRepository.save(event)
     }
 
 
-    //실행시키면 5분 후 1초에 한번씩 실행이 됌
-    @Scheduled(fixedRate = 1000, initialDelay = 1_000 * 60 * 5)
-    override fun redisToLocalQueueSchedule(requestDto: CouponIssuanceRequestDto) {
-        //큐에서 빼온 member 쿠폰이랑 연결시키고 쿠폰갯수 끝나면 대기큐에 있는사람들에게 꽝 넣어주기
-        couponIssuance(requestDto)
+    override fun getInstanceByName(eventName: String) : Event{
+        return eventRepository.findByName(eventName)
+            .orElseThrow{IllegalArgumentException("존재하지 않는 이벤트 입니다")}
     }
+
 
 }

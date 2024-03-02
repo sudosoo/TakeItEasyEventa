@@ -12,9 +12,16 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/redis")
 class TestController (val redisService: RedisService){
 
-    @PostMapping("/test")
-    fun getMemberList(@RequestBody requestDto: CouponEventRedisRequest): ResponseEntity<Void> {
+    @PostMapping("/test1")
+    fun couponV1(@RequestBody requestDto: CouponEventRedisRequest): ResponseEntity<Void> {
         println(requestDto.toString())
         return ResponseEntity.ok().build()
     }
+
+    @PostMapping("/test2")
+    fun couponV2(@RequestBody requestDto: CouponEventRedisRequest): ResponseEntity<Void> {
+        println(requestDto.toString())
+        return ResponseEntity.ok().build()
+    }
+
 }
