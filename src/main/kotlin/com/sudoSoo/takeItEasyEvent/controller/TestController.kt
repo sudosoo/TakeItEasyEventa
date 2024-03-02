@@ -14,8 +14,7 @@ class TestController (val redisService: RedisService){
 
     @PostMapping("/test")
     fun getMemberList(@RequestBody requestDto: CouponEventRedisRequest): ResponseEntity<Void> {
-        val score =  redisService.register(requestDto)
-        println(score)
+        println(requestDto.toString())
         return ResponseEntity.ok().build()
     }
 }

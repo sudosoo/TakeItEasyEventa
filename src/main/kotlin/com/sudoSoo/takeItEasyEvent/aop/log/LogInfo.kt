@@ -7,7 +7,8 @@ class LogInfo(
     val header: Map<String, String>,
     val parameters: String,
     val body: String,
-    val ipAddress: String
-) {
+    val ipAddress: String,
     var exception: String? = null
+) {
+
 }

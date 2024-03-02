@@ -1,5 +1,6 @@
 package com.sudoSoo.takeItEasyEvent.aop.lock
 
+import com.sudoSoo.takeItEasyEvent.common.annotation.DistributeLock
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -17,7 +18,7 @@ class DistributeLockAop(val redissonClient: RedissonClient, val aopTransaction: 
         private const val REDISSON_KEY_PREFIX = "RLOCK_"
     }
 
-    @Around("@annotation(com.sudoSoo.takeItEasyEvent.aop.lock.DistributeLock)")
+    @Around("@annotation(com.sudoSoo.takeItEasyEvent.common.annotation.DistributeLock)")
     fun lock(joinPoint: ProceedingJoinPoint): Any {
         val signature = joinPoint.signature as MethodSignature
         val method = signature.method

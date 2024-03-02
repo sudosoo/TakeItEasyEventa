@@ -1,4 +1,4 @@
-package com.sudoSoo.takeItEasyEvent.aop.lock
+package com.sudoSoo.takeItEasyEvent.common.annotation
 
 import java.util.concurrent.TimeUnit
 
