@@ -5,9 +5,9 @@ import jakarta.persistence.LockModeType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import java.util.*
 
 interface EventRepository : JpaRepository<Event, Long> {
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT e FROM Event e WHERE e.memberId IS NULL AND e.id = :eventId")
-    fun findByEventIdForUpdate(eventId: Long): Event?
+    fun findByName(eventName: String): Optional<Event>
 }

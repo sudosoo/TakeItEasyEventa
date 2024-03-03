@@ -7,12 +7,10 @@ import java.time.format.DateTimeFormatter
 
 @Entity
 class Event(
-    val eventName: String,
+    var eventName: String,
     var eventDeadline: LocalDateTime,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
-    var coupon :MutableList<Coupon> = mutableListOf(),
-    var couponQuantity : Int
+    @OneToMany(mappedBy = "event")
+    var coupon : MutableList<Coupon> = mutableListOf(),
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,20 +21,12 @@ class Event(
         return eventDeadline.isBefore(currentDateTime)
         }
 
-    fun decreaseCouponQuantity() {
-        if (couponQuantity > 0) {
-            couponQuantity--
-        } else {
-            throw IllegalStateException("남은 쿠폰 수량이 없습니다.")
-        }
-    }
 
     companion object {
         fun of(requestDto: CreateEventRequestDto): Event {
             return Event(
                 eventName = requestDto.eventName,
                 eventDeadline = LocalDateTime.parse(requestDto.eventDeadline, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                couponQuantity = requestDto.couponQuantity
                 )
         }
     }
