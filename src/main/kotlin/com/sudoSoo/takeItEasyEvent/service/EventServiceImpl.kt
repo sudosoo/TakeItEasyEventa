@@ -13,11 +13,10 @@ import java.time.LocalDateTime
 @Service
 @Transactional
 class EventServiceImpl (val eventRepository:EventRepository) :EventService {
-    override fun createEvent(requestDto: CreateEventRequestDto) {
+    override fun create(requestDto: CreateEventRequestDto) {
         val event = Event.of(requestDto)
         eventRepository.save(event)
     }
-
 
     override fun getInstanceByName(eventName: String) : Event{
         return eventRepository.findByName(eventName)

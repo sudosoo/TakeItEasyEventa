@@ -21,7 +21,7 @@ class CouponServiceImpl (
     val redissonClient: RedissonClient ) : CouponService {
 
     val objectMapper = ObjectMapper()
-    fun createCoupon(requestDto: CreateCouponRequestDto) {
+    override fun create(requestDto: CreateCouponRequestDto) {
         validateDiscountFields(requestDto)
         val coupon = if (requestDto.discountRate == 0) {
             // 할인율 적용 쿠폰일 때
@@ -41,11 +41,11 @@ class CouponServiceImpl (
             throw IllegalArgumentException("discountRate 또는 discountPrice 중 하나만 존재 해야 합니다.")
         }
     }
-    override fun priceCouponCreate(requestDto: CreateCouponRequestDto) : Coupon {
+    private fun priceCouponCreate(requestDto: CreateCouponRequestDto) : Coupon {
         return Coupon.priceOf(requestDto)
     }
 
-    override fun rateCouponCreate(requestDto: CreateCouponRequestDto): Coupon {
+    private fun rateCouponCreate(requestDto: CreateCouponRequestDto): Coupon {
         return Coupon.rateOf(requestDto)
     }
 
@@ -66,19 +66,14 @@ class CouponServiceImpl (
         couponRepository.save(coupon)
     }
 
-
     private val WAIT_QUEUE_KEY = "waitingQ"
     private val PROCESS_QUEUE = "processQ"
     private val WAIT_TIME = 5L
     private val LEASE_TIME = 2L
-
-    fun eventProcessingV1(requestDto: CouponIssuanceRequestDto)  {
-
-    }
-
+    @Scheduled(initialDelay = 1_000 * 60 * 5)
     fun eventProcessingV2()  {
-        var memberRank = 0 // 시작
-        val memberRankEnd = 100 // 수행할 데이터의 개수
+        var memberRank = 0
+        val memberRankEnd = 100
 
         while (true) {
             val rLock: RLock = redissonClient.getLock(PROCESS_QUEUE)
@@ -92,7 +87,6 @@ class CouponServiceImpl (
                 if (isLock != true) {
                     return
                 }
-
                 // 가져온 데이터가 비어있으면 모두 소진된 것으로 간주하고 반복 종료
                 if (dataBatch.isEmpty()) {
                     break
@@ -111,10 +105,8 @@ class CouponServiceImpl (
 
 
             } catch (e: InterruptedException) {
-                // 예외 발생 시 처리
                 e.printStackTrace();
                 println("An error occurred: ${e.message}")
-
                 break // 예외 발생 시 반복 종료
             } finally {
                 if (rLock.isLocked() && rLock.isHeldByCurrentThread()) {
@@ -123,6 +115,7 @@ class CouponServiceImpl (
             }
         }
     }
+
     private fun processDataBatch(dataBatch: MutableCollection<String>) {
         dataBatch.forEach { e ->
             var element = objectMapper.readValue(e, CouponIssuanceRequestDto::class.java)

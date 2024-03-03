@@ -7,8 +7,7 @@ import com.sudoSoo.takeItEasyEvent.dto.CreateEventRequestDto
 import com.sudoSoo.takeItEasyEvent.entity.Coupon
 
 interface CouponService {
-    fun priceCouponCreate(requestDto: CreateCouponRequestDto): Coupon
-    fun rateCouponCreate(requestDto: CreateCouponRequestDto): Coupon
+    fun create(requestDto: CreateCouponRequestDto)
     fun couponIssuance(requestDto: CouponIssuanceRequestDto) : Int
     fun couponIssuanceV2(requestDto: CouponIssuanceRequestDto)
 }

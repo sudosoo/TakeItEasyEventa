@@ -6,6 +6,7 @@ import com.sudoSoo.takeItEasyEvent.entity.Event
 import com.sudoSoo.takeItEasyEvent.repository.CouponRepository
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -36,7 +37,7 @@ class CouponServiceImplTest{
     @Test
     @DisplayName("쿠폰 발급 테스트 (멀티 스레드)")
     fun couponIssuance() {
-        val numberOfThreads = 100
+        val numberOfThreads = 100000
         val executorService = Executors.newFixedThreadPool(10)
         val latch = CountDownLatch(numberOfThreads)
         val requestDto = CouponIssuanceRequestDto(1L,1L,1L)
@@ -59,5 +60,8 @@ class CouponServiceImplTest{
             }
         }
         latch.await()
+
+        assertEquals(0, coupon.couponQuantity)
+
     }
 }
