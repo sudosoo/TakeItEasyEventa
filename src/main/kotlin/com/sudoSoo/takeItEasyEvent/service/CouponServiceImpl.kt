@@ -3,6 +3,7 @@ package com.sudoSoo.takeItEasyEvent.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sudoSoo.takeItEasyEvent.common.annotation.DistributeLock
 import com.sudoSoo.takeItEasyEvent.dto.CouponIssuanceRequestDto
+import com.sudoSoo.takeItEasyEvent.dto.CouponIssuanceResponseDto
 import com.sudoSoo.takeItEasyEvent.dto.CreateCouponRequestDto
 import com.sudoSoo.takeItEasyEvent.entity.Coupon
 import com.sudoSoo.takeItEasyEvent.repository.CouponRepository
@@ -79,18 +80,20 @@ class CouponServiceImpl (
             val rLock: RLock = redissonClient.getLock(PROCESS_QUEUE)
 
             try {
-                var isLock = rLock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS)
+                val isLock = rLock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS)
                 val dataBatch = redissonClient
                     .getScoredSortedSet<String>(WAIT_QUEUE_KEY)
                     .valueRange(memberRank, memberRankEnd + memberRankEnd - 1)
 
                 if (isLock != true) {
-                    return
+                    throw IllegalArgumentException("락 획득 실패")
                 }
                 // 가져온 데이터가 비어있으면 모두 소진된 것으로 간주하고 반복 종료
+
                 if (dataBatch.isEmpty()) {
                     break
                 }
+
                 // 성공한 사람들
                 if (memberRank == 0) {
                     processDataBatch(dataBatch)
@@ -102,7 +105,6 @@ class CouponServiceImpl (
 
                 // 다음 데이터를 가져오기 위해 offset을 증가시킴
                 memberRank += memberRankEnd
-
 
             } catch (e: InterruptedException) {
                 e.printStackTrace();
@@ -116,18 +118,26 @@ class CouponServiceImpl (
         }
     }
 
-    private fun processDataBatch(dataBatch: MutableCollection<String>) {
+
+    //성공한 인원 성공 메세지
+    private fun processDataBatch(dataBatch: MutableCollection<String>): MutableCollection<CouponIssuanceResponseDto> {
+        var result : MutableList<CouponIssuanceResponseDto> = mutableListOf()
         dataBatch.forEach { e ->
-            var element = objectMapper.readValue(e, CouponIssuanceRequestDto::class.java)
+            val element = objectMapper.readValue(e, CouponIssuanceRequestDto::class.java)
             couponIssuance(element)
+            result.add(CouponIssuanceResponseDto(element,"쿠폰 획득 성공"))
         }
+        return result
     }
 
-    private fun falseProcessDataBatch(dataBatch: MutableCollection<String>) {
+    //실패한 인원 실패 메세지
+    private fun falseProcessDataBatch(dataBatch: MutableCollection<String>) : MutableCollection<CouponIssuanceResponseDto>  {
+        var result : MutableList<CouponIssuanceResponseDto> = mutableListOf()
         dataBatch.forEach { e ->
-            var element = objectMapper.readValue(e, CouponIssuanceRequestDto::class.java)
-            println("쿠폰획득에 실패 하였습니다 userId : ${element.memberId}")
+            val element = objectMapper.readValue(e, CouponIssuanceRequestDto::class.java)
+            result.add(CouponIssuanceResponseDto(element,"쿠폰 획득 실패"))
         }
+        return result
     }
 }
 
