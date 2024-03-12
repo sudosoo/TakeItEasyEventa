@@ -1,7 +1,6 @@
-package com.meokq.api.core
+package com.sudoSoo.takeItEasyEvent.common.service
 
-import com.meokq.api.core.DataValidation.checkNotNullData
-import com.meokq.api.core.exception.NotFoundException
+import com.sudoSoo.takeItEasyEvent.common.service.CommonService.checkNotNullData
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface JpaService<MODEL, ID> {
@@ -17,7 +16,7 @@ interface JpaService<MODEL, ID> {
 
     fun findModelById(id : ID) : MODEL {
         checkNotNullData(id, "data is not found by id : $id")
-        return jpaRepository.findById(id!!).orElseThrow { NotFoundException("data is not found by id : $id") }
+        return jpaRepository.findById(id!!).orElseThrow { IllegalArgumentException("data is not found by id : $id") }
     }
 
     fun deleteById(id : ID) {
