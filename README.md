@@ -24,7 +24,6 @@ MemberInfo(Kotlin) : https://github.com/sudosoo/TakeItEasyAdmin/
 
 ### DataBase
 - H2
-- PostgreSQL
   
 ### Libraries
 - Spring Boot 3.0.1
