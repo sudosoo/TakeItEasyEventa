@@ -19,7 +19,7 @@ class RedisConfig (
     @Value("\${devsoo.ip}")
     val redisHost: String,
 
-    @Value("\${spring.redis.port}")
+    @Value("\${spring.data.redis.port}")
     val redisPort : Int
 ){
     @Bean
