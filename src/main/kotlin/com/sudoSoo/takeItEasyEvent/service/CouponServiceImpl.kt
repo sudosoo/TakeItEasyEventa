@@ -21,10 +21,9 @@ import java.util.concurrent.TimeUnit
 class CouponServiceImpl (
     val couponRepository: CouponRepository,
     val eventService: EventService,
-    val redissonClient: RedissonClient,
-    override var jpaRepository: JpaRepository<Coupon, Long>
-) : CouponService,JpaService<Coupon,Long> {
+    val redissonClient: RedissonClient ) : CouponService , JpaService<Coupon,Long> {
 
+    override var jpaRepository: JpaRepository<Coupon, Long> = couponRepository
     val objectMapper = ObjectMapper()
 
     override fun create(requestDto: CreateCouponRequestDto) {
@@ -38,7 +37,7 @@ class CouponServiceImpl (
         }
         val event = eventService.getInstanceByName(requestDto.eventName)
         event.addCoupon(coupon)
-        couponRepository.save(coupon);
+        saveModel(coupon);
     }
 
     private fun validateDiscountFields(requestDto: CreateCouponRequestDto) {
@@ -60,7 +59,7 @@ class CouponServiceImpl (
         val coupon : Coupon = couponRepository.findById(requestDto.couponId).orElseThrow { IllegalArgumentException("존재 하지 않는 쿠폰 입니다.") }
         coupon.issueToMember(requestDto.memberId)
         coupon.decreaseCouponQuantity()
-        couponRepository.save(coupon)
+        saveModel(coupon)
         return coupon.couponQuantity
     }
 
@@ -69,7 +68,7 @@ class CouponServiceImpl (
         val coupon : Coupon = couponRepository.findById(requestDto.couponId).orElseThrow { IllegalArgumentException("존재 하지 않는 쿠폰 입니다.") }
         coupon.issueToMember(requestDto.memberId)
         coupon.decreaseCouponQuantity()
-        couponRepository.save(coupon)
+        saveModel(coupon)
     }
 
     private val WAIT_QUEUE_KEY = "waitingQ"
