@@ -2,6 +2,7 @@ package com.sudoSoo.takeItEasyEvent.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sudoSoo.takeItEasyEvent.common.annotation.DistributeLock
+import com.sudoSoo.takeItEasyEvent.common.service.JpaService
 import com.sudoSoo.takeItEasyEvent.dto.CouponIssuanceRequestDto
 import com.sudoSoo.takeItEasyEvent.dto.CouponIssuanceResponseDto
 import com.sudoSoo.takeItEasyEvent.dto.CreateCouponRequestDto
@@ -9,6 +10,7 @@ import com.sudoSoo.takeItEasyEvent.entity.Coupon
 import com.sudoSoo.takeItEasyEvent.repository.CouponRepository
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,9 +21,12 @@ import java.util.concurrent.TimeUnit
 class CouponServiceImpl (
     val couponRepository: CouponRepository,
     val eventService: EventService,
-    val redissonClient: RedissonClient ) : CouponService {
+    val redissonClient: RedissonClient,
+    override var jpaRepository: JpaRepository<Coupon, Long>
+) : CouponService,JpaService<Coupon,Long> {
 
     val objectMapper = ObjectMapper()
+
     override fun create(requestDto: CreateCouponRequestDto) {
         validateDiscountFields(requestDto)
         val coupon = if (requestDto.discountRate == 0) {
