@@ -2,6 +2,7 @@ package com.sudoSoo.takeItEasyEvent.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sudoSoo.takeItEasyEvent.common.annotation.DistributeLock
+import com.sudoSoo.takeItEasyEvent.common.service.JpaService
 import com.sudoSoo.takeItEasyEvent.dto.CouponIssuanceRequestDto
 import com.sudoSoo.takeItEasyEvent.dto.CouponIssuanceResponseDto
 import com.sudoSoo.takeItEasyEvent.dto.CreateCouponRequestDto
@@ -9,6 +10,7 @@ import com.sudoSoo.takeItEasyEvent.entity.Coupon
 import com.sudoSoo.takeItEasyEvent.repository.CouponRepository
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,9 +21,11 @@ import java.util.concurrent.TimeUnit
 class CouponServiceImpl (
     val couponRepository: CouponRepository,
     val eventService: EventService,
-    val redissonClient: RedissonClient ) : CouponService {
+    val redissonClient: RedissonClient ) : CouponService , JpaService<Coupon,Long> {
 
+    override var jpaRepository: JpaRepository<Coupon, Long> = couponRepository
     val objectMapper = ObjectMapper()
+
     override fun create(requestDto: CreateCouponRequestDto) {
         validateDiscountFields(requestDto)
         val coupon = if (requestDto.discountRate == 0) {
@@ -33,7 +37,7 @@ class CouponServiceImpl (
         }
         val event = eventService.getInstanceByName(requestDto.eventName)
         event.addCoupon(coupon)
-        couponRepository.save(coupon);
+        saveModel(coupon);
     }
 
     private fun validateDiscountFields(requestDto: CreateCouponRequestDto) {
@@ -55,7 +59,7 @@ class CouponServiceImpl (
         val coupon : Coupon = couponRepository.findById(requestDto.couponId).orElseThrow { IllegalArgumentException("존재 하지 않는 쿠폰 입니다.") }
         coupon.issueToMember(requestDto.memberId)
         coupon.decreaseCouponQuantity()
-        couponRepository.save(coupon)
+        saveModel(coupon)
         return coupon.couponQuantity
     }
 
@@ -64,7 +68,7 @@ class CouponServiceImpl (
         val coupon : Coupon = couponRepository.findById(requestDto.couponId).orElseThrow { IllegalArgumentException("존재 하지 않는 쿠폰 입니다.") }
         coupon.issueToMember(requestDto.memberId)
         coupon.decreaseCouponQuantity()
-        couponRepository.save(coupon)
+        saveModel(coupon)
     }
 
     private val WAIT_QUEUE_KEY = "waitingQ"

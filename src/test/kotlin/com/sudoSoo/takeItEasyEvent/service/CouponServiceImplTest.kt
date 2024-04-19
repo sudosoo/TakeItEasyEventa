@@ -36,8 +36,7 @@ class CouponServiceImplTest{
     }
 
     @Test
-    @DisplayName("쿠폰 발급 테스트 (멀티 스레드) 10만명 중 10명")
-    fun couponIssuance() {
+    fun `쿠폰 발급 테스트(멀티스레딩) 10만명 중 10명`() {
         val numberOfThreads = 10000
         val executorService = Executors.newFixedThreadPool(10)
         val latch = CountDownLatch(numberOfThreads)
